@@ -6,7 +6,9 @@ RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install --no-cache-dir -r /app/requirements.txt
 
 # Copy plugin app content:
-COPY main.py /app/
+COPY attention_cae.py  calibration_data.py  main.py  \
+     online_models.py  samplers.py  test.py \ 
+     /app/
 COPY test /app/test/
 
 # Set SAGE environment variables:

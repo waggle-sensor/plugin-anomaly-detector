@@ -7,9 +7,29 @@ from tensorflow.keras import layers, losses
 from tensorflow.keras.regularizers import l2
 
 class Attention_CAE(Model):
+    """
+        Represents a convolutional autoencoder Keras Model
+        that employs attention expansion as a form of
+        regularization.
+    """
         
     def __init__(self, latent_dim=64, input_shape=(960,1280,3), 
                  attention_weight=0.001):
+        """
+            Constructions a Convolutional Autoencoder with attention
+            expansion loss.
+
+            parameters:
+                latent_dim: the number of latent features
+
+                input_shape: the shape of the model input tensor 
+                             e.g. (height,width,channels)
+                
+                attention_weight: the weight given to the attention loss
+                                  relative to reconstruction loss.
+                                  (recommended: 0.001)
+        """
+
         super(Attention_CAE, self).__init__()
         
         # The number of encoding features

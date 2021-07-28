@@ -17,6 +17,7 @@ import datetime
 import pickle as pkl
 from itertools import islice
 
+from samplers import ExponentialHeapSampler
 
 class OnlineAnomalyDetectionModel():
     """
@@ -31,7 +32,6 @@ class OnlineAnomalyDetectionModel():
 
     def __init__(self, lossmap_model, optimizer, input_shape, 
                  alpha=0.005, beta=0.005, 
-                 batch_size=5,
                  example_buffer_len=20):
         """
             Constructs an Online Anomaly Detection model.
@@ -51,10 +51,7 @@ class OnlineAnomalyDetectionModel():
                 
                 beta: decay coefficient for gamma distribution filter
                       (recommended: 0.005)
-                
-                batch_size: online batch size
-                            (recommended: 5; must divide example_buffer_len)
-                
+                              
                 example_buffer_len: the number of buffered example images
                                     (recommended: 20)
             
@@ -73,18 +70,15 @@ class OnlineAnomalyDetectionModel():
         assert(0.0 <= alpha <= 1.0)
         assert(0.0 <= beta <= 1.0)
         assert(example_buffer_len > 0)
-        assert(batch_size > 0)
         assert(input_shape[0] > 0)
         assert(input_shape[1] > 0)
         assert(input_shape[2] > 0)
-        assert((example_buffer_len % batch_size) == 0)
         
         self.lossmap_model = lossmap_model
         self.input_sampler = ExponentialHeapSampler(example_buffer_len)
         self.optimizer = optimizer
         self.alpha = alpha
         self.beta = beta
-        self.batch_size = batch_size
         self.gamma_kappa = None
         self.gamma_theta = None
         
@@ -96,15 +90,15 @@ class OnlineAnomalyDetectionModel():
         """
             Calibrates an online model (to avoid the model thinking everything is
             an anomaly right after deployment).
-
+    
             parameters:
                 
                 data: an array of (batched) input tensors [could be a tf.keras.utils.Sequence]
                 
                 n_epochs: number of training epochs
-
+        
                 optimizer: optimizer for training (defaults to model's optimizer)
-
+        
                 verbose: train with verbose output
         """
 
@@ -198,8 +192,8 @@ class OnlineAnomalyDetectionModel():
         # record input as not-anomalous:
         self.input_sampler.add(x)
 
-        # perform a weight update iteration (with batching):
-        for x in self._batch_groups(self.input_sampler):
+        # perform a weight update iteration:
+        for x in self.input_sampler:
             self.lossmap_model.train_step(x, optimizer)
         
         # update gamma filter
@@ -266,7 +260,7 @@ class OnlineAnomalyDetectionModel():
 
     def _batch_groups(self, x_list):
         """
-            helper function to return a batch iterator
+            helper function to return a batch iterator (unused)
         """
         x_it = iter(x_list)
         while True:
