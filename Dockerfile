@@ -10,6 +10,8 @@ COPY attention_cae.py  calibration_data.py  main.py  \
      online_models.py  samplers.py  test.py \ 
      /app/
 COPY test /app/test/
+COPY calibration_data /app/calibration_data/
+COPY saved_weights /app/saved_weights/
 
 # Set SAGE environment variables:
 ARG SAGE_STORE_URL="HOST"

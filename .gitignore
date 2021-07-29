@@ -2,14 +2,16 @@
 env
 __pycache__/
 
-# ignore datasets:
-/datasets
-!/datasets/.gitkeep
-
 # ignore any testing artifacts:
 .bash_history
 
 # ignore saved weights but keep directory:
-saved_weights
+saved_weights/*
 !saved_weights/.gitkeep
+
+# ignore calibration data but keep directory:
+calibration_data/normal/*
+!calibration_data/normal/.gitkeep
+calibration_data/anomaly/*
+!calibration_data/anomaly/.gitkeep
 
