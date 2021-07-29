@@ -1,6 +1,6 @@
 # General Purpose Image Anomaly Detector
 
-This is a general purpose anomaly detector plugin that is entirely online and unsupervised.
+This is a general purpose online unsupervised anomaly detector plugin.
 
 ## Getting started
 
