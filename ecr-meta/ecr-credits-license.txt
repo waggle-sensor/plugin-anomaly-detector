@@ -1,0 +1,4 @@
+authors: Colin Burdine <colin_burdine1@baylor.edu>
+collaborators: Nicola Ferrier <nferrier@anl.gov>
+funding: This project was funded by the DOE Department of Energy SULI Program.
+license: GNU General Public License v3.0	
