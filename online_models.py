@@ -5,7 +5,7 @@ import cv2
 import sklearn
 import scipy.stats as stats
 import scipy.special as sps
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 import os
 import time
@@ -188,10 +188,10 @@ class OnlineAnomalyDetectionModel():
         
         if optimizer == None:
             optimizer = self.optimizer
-
+        
         # record input as not-anomalous:
         self.input_sampler.add(x)
-
+        
         # perform a weight update iteration:
         for x in self.input_sampler:
             self.lossmap_model.train_step(x, optimizer)
@@ -199,14 +199,19 @@ class OnlineAnomalyDetectionModel():
         # update gamma filter
         beta_c = (1.0 - self.beta)
         clip_lm = np.clip(lossmap, 1e-30, None)
+        
+        if self.gamma_x is None:
+            self.gamma_x = np.zeros(clip_lm.shape)
+        if self.gamma_logx is None:
+            self.gamma_logx = np.zeros(clip_lm.shape)
+        if self.gamma_xlogx is None:
+            self.gamma_xlogx = np.zeros(clip_lm.shape)
+        
         self.gamma_x = self.beta*clip_lm + beta_c*self.gamma_x
         self.gamma_logx = self.beta*np.log(clip_lm) + beta_c*self.gamma_logx
         self.gamma_xlogx = self.beta*(clip_lm*np.log(clip_lm)) + beta_c*self.gamma_xlogx
-        
         self.gamma_theta = self.gamma_xlogx - self.gamma_logx*self.gamma_x
         self.gamma_kappa = self.gamma_x / self.gamma_theta
-        
-        #print(np.mean(self.gamma_kappa), np.mean(self.gamma_theta))
         
         return pred_boxes
 
@@ -274,7 +279,11 @@ class OnlineAnomalyDetectionModel():
         """
             helper function to identify bounding boxes from a lossmap
         """
+        
         assert(lm.shape[0] == 1)
+        if self.gamma_kappa is None or self.gamma_theta is None:
+            return []
+        
         lossmap  = lm[0]
         im_size = lossmap.shape[0]*lossmap.shape[1]
         gamma_mass = np.squeeze(stats.gamma.cdf(lossmap, a=self.gamma_kappa, 
