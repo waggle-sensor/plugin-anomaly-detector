@@ -22,6 +22,10 @@ ENV SAGE_STORE_URL=${SAGE_STORE_URL} \
     SAGE_USER_TOKEN=${SAGE_USER_TOKEN} \
     BUCKET_ID_MODEL=${BUCKET_ID_MODEL}
 
+# set CUDA environment variables:
+ENV CUDA_VISIBLE_DEVICES=0
+ENV TF_FORCE_GPU_ALLOW_GROWTH='true'
+
 # Establish entrypoint:
 # ----- Arguments -----
 # (TODO) 

@@ -1,3 +1,4 @@
+#!/bin/env python3 
 from waggle import plugin
 from waggle.data.vision import Camera
 
@@ -14,7 +15,7 @@ from online_models import OnlineAnomalyDetectionModel
 from calibration_data import AnomalyDetectorBatcher
 
 def main():
-    
+       
     parser = argparse.ArgumentParser(description="This program uses a convolutional autoencoder for online anomaly detection in images.")
     parser.add_argument("--interval", type=float, default=10.0, 
         help="time between inferences in seconds")
@@ -43,7 +44,7 @@ def main():
     camera = Camera()
     
     # use 4:3 input aspect ratio for input (height,width,channels):
-    input_shape=(960,1280,3)
+    input_shape=(480,640,3)
     cae = Attention_CAE(input_shape=input_shape)
     model = OnlineAnomalyDetectionModel(
                 cae,
